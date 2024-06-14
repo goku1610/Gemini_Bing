@@ -179,7 +179,7 @@ func main() {
 
 	const (
 		endpoint = "https://api.bing.microsoft.com/v7.0/search"
-		token    = "e635fcdf348e4a868154deb206dc0740"
+		token    = "Use a valid API key"
 	)
 	var searchTerm = keywordsString
 	fmt.Print(searchTerm)
