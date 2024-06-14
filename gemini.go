@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -93,7 +94,7 @@ func keywords(a string) {
 	}
 	defer client.Close()
 
-	model := client.GenerativeModel("gemini-pro")
+	model := client.GenerativeModel("gemini-1.5-pro")
 
 	prompt := []genai.Part{
 		genai.Text(a),
@@ -146,13 +147,14 @@ func bingSearch(endpoint, token, query string) (*BingAnswer, error) {
 }
 
 func main() {
+	reader := bufio.NewReader(os.Stdin)
+	fmt.Println("Enter a sentence:")
+	input, _ := reader.ReadString('\n')
 
-	var userInput string
-	fmt.Print("Enter a statement: ")
-	fmt.Scanln(&userInput)
-	var a string = "Given a statement 'HDFC Bank statements about TATA Motors' this is the query 'site:hdfcbank.com 'tata motors'', statement = 'Amazon product reviews for Samsung Galaxy S23', query = ''samsung galaxy s23' reviews (site:amazon.in)',Statement: 'SBI car loan for Maruti Suzuki', query = 'site:sbi.co.in 'car loan maruti suzuki', Give the query for the statement = '"
-	var b string = a + userInput + " 'dont use 'query ='"
+	var a string = "Given a statement 'HDFC Bank statements about TATA Motors' this is the query 'site:hdfcbank.com 'tata motors'', statement = 'Amazon product reviews for Samsung Galaxy S23', query = ''samsung galaxy s23' reviews (site:amazon.in)',Statement: 'SBI car loan for Maruti Suzuki', query = 'site:sbi.co.in 'car loan maruti suzuki', Statement: 'How has the EBITDA of Bajaj Auto changed in the last one year?', query = 'after:2023 (Bajaj Auto AND EBITDA)', Statement: 'How has Motilal’s investment outlook on the oil industry changed in the last two months?', query = '[“after:2024-05-01 Gross Refining Margin“,“after:2024-05-01 Crude Prices“,“after:2024-05-01 Oil Sanctions“,“after:2024-05-01 Oil to Chemical“] ,Give the query for the statement = "
+	var b string = a + input + " 'dont use 'query ='"
 	file, err := os.CreateTemp("", "output.txt")
+
 	if err != nil {
 		fmt.Println("Error creating temporary file:", err)
 		return
@@ -180,6 +182,7 @@ func main() {
 		token    = "e635fcdf348e4a868154deb206dc0740"
 	)
 	var searchTerm = keywordsString
+	fmt.Print(searchTerm)
 	ans, err := bingSearch(endpoint, token, searchTerm)
 	if err != nil {
 		log.Fatalf("Failed to get search results: %v", err)
@@ -190,6 +193,6 @@ func main() {
 		fmt.Printf("Name: %s\nURL: %s\nDescription: %s\n\n", result.Name, result.URL, result.Snippet)
 		final_string = final_string + "Name: " + result.Name + "\n" + "Description: " + result.Snippet + "\n"
 	}
-	final_string = final_string + "Choose the most relevant 3 to 4 " + userInput + " among these following name description pairs and give me a long summary using the final selected"
+	final_string = final_string + "Choose the most relevant 3 to 4 " + " among these following name description pairs and give me a long summary using the final selected"
 	keywords(final_string)
 }
